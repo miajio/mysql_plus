@@ -8,7 +8,11 @@ import (
 
 // modelCententInteface 模型处理中心
 type modelCententInteface interface {
-	Insert(table string, val interface{}) (sql string, params []interface{}, err error) // Insert 自动生成Insert语句方法
+	getColumns(val interface{}) ([]string, []interface{}) // 获取字段数组及设值数组
+
+	Insert(table string, val interface{}) (string, []interface{}) // Insert 自动生成Insert语句方法
+
+	Update(table string, set interface{}, where string, whereParams ...interface{}) (string, []interface{}) // Update 自动生成Update语句方法
 }
 
 // modelCententStruct 模型处理中心结构体
@@ -18,31 +22,57 @@ type modelCententStruct struct {
 var ModelCentent modelCententInteface = (*modelCententStruct)(nil)
 
 // Insert 自动生成Insert语句方法
-func (mc *modelCententStruct) Insert(table string, val interface{}) (sql string, params []interface{}, err error) {
-	sql = `insert into %s (%s) values (%s)`
+func (mc *modelCententStruct) Insert(table string, val interface{}) (string, []interface{}) {
+	sql := `insert into %s (%s) values (%s)`
 
-	valOf := reflect.ValueOf(val)
-	typeOf := reflect.TypeOf(val)
-
-	columns := make([]string, 0)
 	wheres := make([]string, 0)
 
-	for i := 0; i < typeOf.NumField(); i++ {
-		column := typeOf.Field(i).Tag.Get("db")
-		param := valOf.Field(i).Interface()
-
-		columns = append(columns, column)
-		params = append(params, param)
+	columns, params := mc.getColumns(val)
+	for i := 0; i < len(columns); i++ {
 		wheres = append(wheres, "?")
 	}
 
 	sql = fmt.Sprintf(sql, table, strings.Join(columns, ","), strings.Join(wheres, ","))
-	return
+	return sql, params
 }
 
 // Update 自动生成Update语句方法
-func (mc *modelCententStruct) Update(table string, val interface{}) (sql string, params []interface{}, err error) {
-	sql = `update table %s set %s where %s`
+func (mc *modelCententStruct) Update(table string, set interface{}, where string, whereParams ...interface{}) (string, []interface{}) {
+	sql := `update table %s set %s `
+	columns, resultParams := mc.getColumns(set)
+	setStr := ""
+	if len(columns) > 1 {
+		setStr = strings.Join(columns, " = ?, ") + " = ?"
+	} else {
+		setStr = columns[0] + " = ?"
+	}
 
-	return
+	if where != "" {
+		setStr = setStr + " where " + where
+		resultParams = append(resultParams, whereParams...)
+	}
+
+	sql = fmt.Sprintf(sql, table, setStr)
+
+	return sql, resultParams
+}
+
+func (mc *modelCententStruct) getColumns(val interface{}) ([]string, []interface{}) {
+
+	columns := make([]string, 0)
+	params := make([]interface{}, 0)
+
+	typeOf := reflect.TypeOf(val)
+	valueOf := reflect.ValueOf(val)
+
+	for i := 0; i < typeOf.NumField(); i++ {
+		column := typeOf.Field(i).Tag.Get("db")
+		value := valueOf.Field(i).Interface()
+		if !isBlank(reflect.ValueOf(value)) {
+			columns = append(columns, column)
+			params = append(params, value)
+		}
+	}
+
+	return columns, params
 }

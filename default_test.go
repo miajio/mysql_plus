@@ -24,7 +24,7 @@ type DictInfo struct {
 }
 
 func TestInsert(t *testing.T) {
-	sql, params, err := mysqlplus.ModelCentent.Insert("tb_dict_info", DictInfo{
+	sql, params := mysqlplus.ModelCentent.Insert("tb_dict_info", DictInfo{
 		Id:           strings.ToUpper(strings.ReplaceAll(uuid.New(), "-", "")),
 		DictName:     "DictName",
 		DictKey:      "DictKey",
@@ -35,9 +35,23 @@ func TestInsert(t *testing.T) {
 		CreateUser:   "CreateUser",
 		Status:       1,
 	})
-	if err != nil {
-		fmt.Printf("insert sql create fail:%v \n", err)
-	}
+
+	fmt.Println(sql)
+	fmt.Println(params...)
+}
+
+func TestUpdate(t *testing.T) {
+	sql, params := mysqlplus.ModelCentent.Update("tb_dict_info", DictInfo{
+		// Id:           strings.ToUpper(strings.ReplaceAll(uuid.New(), "-", "")),
+		DictName: "DictName",
+		// DictKey:      "DictKey",
+		DictValue:    "DictValue",
+		DictBeforeId: "DictBeforeId",
+		CreateTime:   time.Now().Unix(),
+		UpdateTime:   0,
+		CreateUser:   "CreateUser",
+		Status:       1,
+	}, "status = ? and ? > create_time", 1, time.Now().Unix())
 
 	fmt.Println(sql)
 	fmt.Println(params...)
