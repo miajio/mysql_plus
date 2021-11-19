@@ -56,3 +56,10 @@ func TestUpdate(t *testing.T) {
 	fmt.Println(sql)
 	fmt.Println(params...)
 }
+
+func TestDelete(t *testing.T) {
+	sql, params := mysqlplus.ModelCentent.Delete("tb_dict_info", "status = ? and ? > create_time", 1, time.Now().Unix())
+
+	fmt.Println(sql)
+	fmt.Println(params...)
+}
