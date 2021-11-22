@@ -10,13 +10,17 @@ import (
 type modelCententInteface interface {
 	getColumns(val interface{}) ([]string, []interface{}) // 获取字段数组及设值数组
 
+	getAllTags(val interface{}, tag string) []string // 获取当前结构体对应标签数据
+
 	isBlank(value reflect.Value) bool // 判断值是否为空
 
 	Insert(table string, val interface{}) (string, []interface{}) // Insert 自动生成Insert语句方法
 
 	Update(table string, set interface{}, where string, whereParams ...interface{}) (string, []interface{}) // Update 自动生成Update语句方法
 
-	Delete(table string, where string, whereParams ...interface{}) (string, []interface{}) // Delete 自动生成Delete语句方法
+	Delete(table, where string, whereParams ...interface{}) (string, []interface{}) // Delete 自动生成Delete语句方法
+
+	Select(table, where string, model interface{}, whereParams ...interface{}) (string, []interface{}) // Select 自动生成Select语句方法
 }
 
 // modelCententStruct 模型处理中心结构体
@@ -63,14 +67,29 @@ func (mc *modelCententStruct) Update(table string, set interface{}, where string
 
 // Delete 自动生成Delete语句方法
 func (mc *modelCententStruct) Delete(table string, where string, whereParams ...interface{}) (string, []interface{}) {
-	sql := fmt.Sprintf(`delete from %s `, table)
+	sql := `delete from %s`
 	if where != "" {
-		sql = sql + where
+		sql = sql + " where %s"
+		return fmt.Sprintf(sql, table, where), whereParams
 	}
-	return sql, whereParams
+
+	return fmt.Sprintf(sql, table), whereParams
+}
+
+// Select 自动生成Select语句
+func (mc *modelCententStruct) Select(table, where string, model interface{}, whereParams ...interface{}) (string, []interface{}) {
+	sql := `select %s from %s`
+	columns := strings.Join(mc.getAllTags(model, "db"), ",")
+	if where != "" {
+		sql = sql + " where %s"
+		return fmt.Sprintf(sql, columns, table, where), whereParams
+	}
+
+	return fmt.Sprintf(sql, columns, table), whereParams
 }
 
 // getColumns 基础内核方法 获取参数数据
+// 仅返回数据非空的字段数据及数据结果
 func (mc *modelCententStruct) getColumns(val interface{}) ([]string, []interface{}) {
 
 	columns := make([]string, 0)
@@ -89,6 +108,22 @@ func (mc *modelCententStruct) getColumns(val interface{}) ([]string, []interface
 	}
 
 	return columns, params
+}
+
+// getAllTags 基础内核方法 获取参数标签数据
+// 获取所有字段数据及数据结果
+func (mc *modelCententStruct) getAllTags(val interface{}, tag string) []string {
+
+	columns := make([]string, 0)
+
+	typeOf := reflect.TypeOf(val)
+
+	for i := 0; i < typeOf.NumField(); i++ {
+		column := typeOf.Field(i).Tag.Get("db")
+		columns = append(columns, column)
+	}
+
+	return columns
 }
 
 // isBlank 判断值是否为空
