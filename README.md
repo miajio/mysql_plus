@@ -39,14 +39,15 @@ create table tb_dict_info
 ```
 
 #### 使用(USING)
-
+```
 mysqlplus.Query{
     Insert(table string, val interface{}) (string, []interface{})                                           // Insert 自动生成Insert语句方法
 	Update(table string, set interface{}, where string, whereParams ...interface{}) (string, []interface{}) // Update 自动生成Update语句方法
 	Delete(table, where string, whereParams ...interface{}) (string, []interface{})                         // Delete 自动生成Delete语句方法
 	Select(table, where string, model interface{}, whereParams ...interface{}) (string, []interface{})      // Select 自动生成Select语句方法
 }
-
+```
+```
 mysqlplus.MySqlPlus{
     Create(link string) (*mySqlPlusStruct, error)                                                       // 创建数据库连接对象
 	SetMaxOpenConns(max int)                                                                            // 设置最大连接数
@@ -59,3 +60,4 @@ mysqlplus.MySqlPlus{
 	Delete(table string, where string, whereParams ...interface{}) (sql.Result, error)                  // 自动生成删除语句并执行删除操作
 	Insert(table string, val interface{}) (sql.Result, error)                                           // 自动生成增加语句并执行增加操作
 }
+```
