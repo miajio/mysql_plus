@@ -9,14 +9,10 @@ import (
 
 type utilInterface interface {
 	GetColumns(val interface{}, tag string) ([]string, []interface{}) // 获取字段数组及设值数组
-
-	GetAllTags(val interface{}, tag string) []string // 获取当前结构体对应标签数据
-
-	IsBlank(value reflect.Value) bool // 判断值是否为空
-
-	UUID() string // 获取UUID
-
-	UUIDReplaceAll(old, new string) string // UUIDReplaceAll 获取UUID并进行替换字符
+	GetAllTags(val interface{}, tag string) []string                  // 获取当前结构体对应标签数据
+	IsBlank(value reflect.Value) bool                                 // 判断值是否为空
+	UUID() string                                                     // 获取UUID
+	UUIDReplaceAll(old, new string) string                            // UUIDReplaceAll 获取UUID并进行替换字符
 
 }
 

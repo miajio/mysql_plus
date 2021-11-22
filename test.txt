@@ -1,0 +1,29 @@
+测试文档
+
+数据库:
+mysql
+
+库名:
+mw
+
+字符集:
+utf8mb4
+
+sql语句:
+-- auto-generated definition
+create table tb_dict_info
+(
+    id             varchar(32)            not null comment '字典id'
+        primary key,
+    dict_name      varchar(64) default '' not null comment '字典名称',
+    dict_key       varchar(32) default '' null comment '字典键',
+    dict_value     varchar(64) default '' null comment '字典值',
+    dict_before_id varchar(32)            null comment '上级字典id',
+    create_time    bigint      default 0  null comment '创建时间',
+    update_time    bigint      default 0  null comment '修改时间',
+    create_user    varchar(32) default '' null comment '创建者',
+    status         int         default 1  null comment '字典状态 1 正常 2 停用 3 删除'
+)
+    comment '字典信息表';
+
+

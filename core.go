@@ -5,25 +5,22 @@ import (
 	"strings"
 )
 
-// modelCententInteface 模型处理中心
-type modelCententInteface interface {
-	Insert(table string, val interface{}) (string, []interface{}) // Insert 自动生成Insert语句方法
-
+// queryInterface 模型处理中心
+type queryInterface interface {
+	Insert(table string, val interface{}) (string, []interface{})                                           // Insert 自动生成Insert语句方法
 	Update(table string, set interface{}, where string, whereParams ...interface{}) (string, []interface{}) // Update 自动生成Update语句方法
-
-	Delete(table, where string, whereParams ...interface{}) (string, []interface{}) // Delete 自动生成Delete语句方法
-
-	Select(table, where string, model interface{}, whereParams ...interface{}) (string, []interface{}) // Select 自动生成Select语句方法
+	Delete(table, where string, whereParams ...interface{}) (string, []interface{})                         // Delete 自动生成Delete语句方法
+	Select(table, where string, model interface{}, whereParams ...interface{}) (string, []interface{})      // Select 自动生成Select语句方法
 }
 
-// modelCententStruct 模型处理中心结构体
-type modelCententStruct struct {
+// queryStruct 模型处理中心结构体
+type queryStruct struct {
 }
 
-var ModelCentent modelCententInteface = (*modelCententStruct)(nil)
+var Query queryInterface = (*queryStruct)(nil)
 
 // Insert 自动生成Insert语句方法
-func (mc *modelCententStruct) Insert(table string, val interface{}) (string, []interface{}) {
+func (mc *queryStruct) Insert(table string, val interface{}) (string, []interface{}) {
 	sql := `insert into %s (%s) values (%s)`
 
 	wheres := make([]string, 0)
@@ -38,7 +35,7 @@ func (mc *modelCententStruct) Insert(table string, val interface{}) (string, []i
 }
 
 // Update 自动生成Update语句方法
-func (mc *modelCententStruct) Update(table string, set interface{}, where string, whereParams ...interface{}) (string, []interface{}) {
+func (mc *queryStruct) Update(table string, set interface{}, where string, whereParams ...interface{}) (string, []interface{}) {
 	sql := `update %s set %s `
 	columns, resultParams := Util.GetColumns(set, "db")
 	setStr := ""
@@ -59,7 +56,7 @@ func (mc *modelCententStruct) Update(table string, set interface{}, where string
 }
 
 // Delete 自动生成Delete语句方法
-func (mc *modelCententStruct) Delete(table string, where string, whereParams ...interface{}) (string, []interface{}) {
+func (mc *queryStruct) Delete(table string, where string, whereParams ...interface{}) (string, []interface{}) {
 	sql := `delete from %s`
 	if where != "" {
 		sql = sql + " where %s"
@@ -70,7 +67,7 @@ func (mc *modelCententStruct) Delete(table string, where string, whereParams ...
 }
 
 // Select 自动生成Select语句
-func (mc *modelCententStruct) Select(table, where string, model interface{}, whereParams ...interface{}) (string, []interface{}) {
+func (mc *queryStruct) Select(table, where string, model interface{}, whereParams ...interface{}) (string, []interface{}) {
 	sql := `select %s from %s`
 	columns := strings.Join(Util.GetAllTags(model, "db"), ",")
 	if where != "" {

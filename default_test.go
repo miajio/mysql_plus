@@ -24,7 +24,7 @@ type DictInfo struct {
 }
 
 func TestInsert(t *testing.T) {
-	sql, params := mysqlplus.ModelCentent.Insert("tb_dict_info", DictInfo{
+	sql, params := mysqlplus.Query.Insert("tb_dict_info", DictInfo{
 		Id:           strings.ToUpper(strings.ReplaceAll(uuid.New(), "-", "")),
 		DictName:     "DictName",
 		DictKey:      "DictKey",
@@ -41,7 +41,7 @@ func TestInsert(t *testing.T) {
 }
 
 func TestUpdate(t *testing.T) {
-	sql, params := mysqlplus.ModelCentent.Update("tb_dict_info", DictInfo{
+	sql, params := mysqlplus.Query.Update("tb_dict_info", DictInfo{
 		// Id:           strings.ToUpper(strings.ReplaceAll(uuid.New(), "-", "")),
 		DictName: "DictName",
 		// DictKey:      "DictKey",
@@ -58,15 +58,79 @@ func TestUpdate(t *testing.T) {
 }
 
 func TestDelete(t *testing.T) {
-	sql, params := mysqlplus.ModelCentent.Delete("tb_dict_info", "status = ? and ? > create_time", 1, time.Now().Unix())
+	sql, params := mysqlplus.Query.Delete("tb_dict_info", "status = ? and ? > create_time", 1, time.Now().Unix())
 
 	fmt.Println(sql)
 	fmt.Println(params...)
 }
 
 func TestSelect(t *testing.T) {
-	sql, params := mysqlplus.ModelCentent.Select("tb_dict_info", "status = ? and ? > create_time", DictInfo{}, 1, time.Now().Unix())
+	sql, params := mysqlplus.Query.Select("tb_dict_info", "status = ? and ? > create_time", DictInfo{}, 1, time.Now().Unix())
 
 	fmt.Println(sql)
 	fmt.Println(params...)
+}
+
+func TestDBSelect(t *testing.T) {
+	mp, err := mysqlplus.MySqlPlus.Create("root:123456@tcp(localhost:3306)/mw?charset=utf8mb4&parseTime=True&loc=Local")
+	if err != nil {
+		fmt.Printf("create error: %v", err)
+		return
+	}
+	var res []DictInfo
+	if err = mp.Select(&res, DictInfo{}, "tb_dict_info", "id=?", "06E67B7741E44874B784409B55DD4108"); err != nil {
+		fmt.Printf("select error: %v", err)
+		return
+	}
+	for i := range res {
+		fmt.Println(res[i].Id)
+	}
+}
+
+func TestDBUpdate(t *testing.T) {
+	mp, err := mysqlplus.MySqlPlus.Create("root:123456@tcp(localhost:3306)/mw?charset=utf8mb4&parseTime=True&loc=Local")
+	if err != nil {
+		fmt.Printf("create error: %v", err)
+		return
+	}
+	if _, err = mp.Update("tb_dict_info", DictInfo{
+		DictName: "hello",
+	}, "id=?", "06E67B7741E44874B784409B55DD4108"); err != nil {
+		fmt.Printf("update error: %v", err)
+		return
+	}
+}
+
+func TestDBDelete(t *testing.T) {
+	mp, err := mysqlplus.MySqlPlus.Create("root:123456@tcp(localhost:3306)/mw?charset=utf8mb4&parseTime=True&loc=Local")
+	if err != nil {
+		fmt.Printf("create error: %v", err)
+		return
+	}
+	if _, err = mp.Delete("tb_dict_info", "id=?", "06E67B7741E44874B784409B55DD4108"); err != nil {
+		fmt.Printf("delete error: %v", err)
+		return
+	}
+}
+
+func TestDBInsert(t *testing.T) {
+	mp, err := mysqlplus.MySqlPlus.Create("root:123456@tcp(localhost:3306)/mw?charset=utf8mb4&parseTime=True&loc=Local")
+	if err != nil {
+		fmt.Printf("create error: %v", err)
+		return
+	}
+	if _, err = mp.Insert("tb_dict_info", DictInfo{
+		Id:           mysqlplus.Util.UUIDReplaceAll("-", ""),
+		DictName:     "DictName",
+		DictKey:      "DictKey",
+		DictValue:    "DictValue",
+		DictBeforeId: "DictBeforeId",
+		CreateTime:   time.Now().Unix(),
+		UpdateTime:   0,
+		CreateUser:   "CreateUser",
+		Status:       1,
+	}); err != nil {
+		fmt.Printf("insert error: %v", err)
+		return
+	}
 }
