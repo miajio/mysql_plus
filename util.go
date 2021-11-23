@@ -13,7 +13,6 @@ type utilInterface interface {
 	IsBlank(value reflect.Value) bool                                 // 判断值是否为空
 	UUID() string                                                     // 获取UUID
 	UUIDReplaceAll(old, new string) string                            // UUIDReplaceAll 获取UUID并进行替换字符
-
 }
 
 type utilStruct struct{}
@@ -85,4 +84,9 @@ func (u *utilStruct) UUID() string {
 // UUIDReplaceAll 获取UUID并进行替换字符
 func (u *utilStruct) UUIDReplaceAll(old, new string) string {
 	return strings.ReplaceAll(u.UUID(), old, new)
+}
+
+// ReadXml 读取xml文件
+func (u *utilStruct) ReadXml(source string) {
+
 }

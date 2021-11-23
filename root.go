@@ -10,6 +10,7 @@ import (
 
 type mySqlPlusInterface interface {
 	Create(link string) (*mySqlPlusStruct, error)                                                       // 创建数据库连接对象
+	SetResources(resources ...string)                                                                   // 设置mysql语句目录
 	SetMaxOpenConns(max int)                                                                            // 设置最大连接数
 	SetMaxIdleConns(max int)                                                                            // 设置最大空闲数
 	SetConnMaxLifetime(max time.Duration)                                                               // 设置最大重连时间
@@ -22,9 +23,10 @@ type mySqlPlusInterface interface {
 }
 
 type mySqlPlusStruct struct {
-	isInit bool
-	link   string
-	db     *sqlx.DB
+	isInit    bool     // 是否初始化
+	link      string   // 数据库连接字符串
+	db        *sqlx.DB // 数据库连接对象
+	resources []string // mysql语句目录
 }
 
 var MySqlPlus mySqlPlusInterface = (*mySqlPlusStruct)(nil)
@@ -37,13 +39,19 @@ func (mySqlPlus *mySqlPlusStruct) Create(link string) (*mySqlPlusStruct, error) 
 			return nil, err
 		}
 		mySqlPlus = &mySqlPlusStruct{
-			db:     db,
-			link:   link,
-			isInit: true,
+			db:        db,
+			link:      link,
+			resources: nil,
+			isInit:    true,
 		}
 		return mySqlPlus, nil
 	}
 	return mySqlPlus, nil
+}
+
+// SetResources 设置mysql语句目录
+func (mySqlPlus *mySqlPlusStruct) SetResources(resources ...string) {
+	mySqlPlus.resources = resources
 }
 
 // SetMaxOpenConns 设置最大连接数
