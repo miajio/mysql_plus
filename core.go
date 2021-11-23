@@ -11,6 +11,7 @@ type queryInterface interface {
 	Update(table string, set interface{}, where string, whereParams ...interface{}) (string, []interface{}) // Update 自动生成Update语句方法
 	Delete(table, where string, whereParams ...interface{}) (string, []interface{})                         // Delete 自动生成Delete语句方法
 	Select(table, where string, model interface{}, whereParams ...interface{}) (string, []interface{})      // Select 自动生成Select语句方法
+	CreateSQL(model interface{}) *QuerySQL                                                                  // CreateSQL 创建QuerySQL查询对象
 }
 
 // queryStruct 模型处理中心结构体
@@ -76,4 +77,11 @@ func (mc *queryStruct) Select(table, where string, model interface{}, whereParam
 	}
 
 	return fmt.Sprintf(sql, columns, table), whereParams
+}
+
+// CreateSQL 创建QuerySQL查询对象
+func (mc *queryStruct) CreateSQL(model interface{}) *QuerySQL {
+	return &QuerySQL{
+		model: model,
+	}
 }
