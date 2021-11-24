@@ -18,9 +18,10 @@ func TestQuerySQL(t *testing.T) {
 	// fmt.Println(sql)
 	// fmt.Println(params...)
 
-	c := mysqlplus.Query.CreateSQL("tb_dict_info", DictInfo{}).SelectJoin("a.id, b.id, b.name").Join(1, map[string]mysqlplus.SqlParam{
-		"a": {
-			Sql: "a.id = b.join_id",
+	c := mysqlplus.CreateQuerySQL("tb_dict_info", "a", DictInfo{}).SelectJoin("a.id", "b.id", "b.name").LeftJoin(map[string]mysqlplus.SqlParam{
+		"ttb": {
+			As: "b",
+			On: "a.id = b.join_id",
 		},
 	}).Where("a.id = ?", "123456")
 	sql, params := c.ToSQL()
