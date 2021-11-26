@@ -2,8 +2,9 @@ package mysqlplus_test
 
 import (
 	"fmt"
-	mysqlplus "mysql_plus"
 	"testing"
+
+	mysqlplus "github.com/op-shanghan/mysql_plus"
 )
 
 func TestQuerySQL(t *testing.T) {

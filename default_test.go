@@ -2,10 +2,11 @@ package mysqlplus_test
 
 import (
 	"fmt"
-	mysqlplus "mysql_plus"
 	"strings"
 	"testing"
 	"time"
+
+	mysqlplus "github.com/op-shanghan/mysql_plus"
 
 	"github.com/go-basic/uuid"
 )
