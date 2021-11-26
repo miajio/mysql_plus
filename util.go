@@ -85,8 +85,3 @@ func (u *utilStruct) UUID() string {
 func (u *utilStruct) UUIDReplaceAll(old, new string) string {
 	return strings.ReplaceAll(u.UUID(), old, new)
 }
-
-// ReadXml 读取xml文件
-func (u *utilStruct) ReadXml(source string) {
-
-}
