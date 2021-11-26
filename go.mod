@@ -1,4 +1,4 @@
-module github.com/op-shanghan/mysql_plus
+module github.com/op-shanghan/myplus
 
 go 1.17
 
