@@ -170,11 +170,9 @@ func (q *querySQL) ToSQL() (string, []interface{}) {
 		result = result + q.joinSql
 		params = append(params, q.joinParams...)
 	}
-	if q.group == 2 {
-		if q.set != "" {
-			result = result + " SET " + q.set
-			params = append(params, q.setParams...)
-		}
+	if q.group == 2 && q.set != "" {
+		result = result + " SET " + q.set
+		params = append(params, q.setParams...)
 	}
 	if q.where != "" {
 		result = result + " WHERE " + q.where
